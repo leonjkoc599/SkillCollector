@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code · 10 个必备 Skills</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e29;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #7b61ff;
+    --accent3: #ff6b6b;
+    --accent4: #ffc94a;
+    --text: #e2e8f0;
+    --text-secondary: #8892a4;
+    --text-muted: #8892a4;
+    --text-dim: #8892a4;
+    --text-bright: #ffffff;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'Noto Sans SC', sans-serif;
+    --coral: #f97316;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* Sidebar Navigation */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .brand {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-logo .title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-top: 4px;
+  }
+
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 8px 8px 4px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .nav-link:hover { background: var(--surface2); color: var(--text); }
+  .nav-link.active { background: rgba(79,255,176,0.1); color: var(--accent); }
+  .nav-link .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Main Content */
+  .main {
+    margin-left: 240px;
+    min-height: 100vh;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0d0f14 0%, #13161e 50%, #0d1220 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 64px 48px;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(79,255,176,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 200px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(123,97,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin-bottom: 32px;
+    line-height: 1.8;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .stat-num span { color: var(--accent); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Content Area */
+  .content {
+    padding: 48px 64px;
+    max-width: 900px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 0 auto 36px;
+    padding: 0 24px;
+    max-width: 760px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Grid */
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: rgba(123,97,255,0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(123,97,256,0.1);
+  }
+
+  .card.open {
+    border-color: rgba(123,97,255,0.5);
+    box-shadow: 0 0 0 1px rgba(123,97,255,0.2), 0 12px 40px rgba(123,97,256,0.12);
+  }
+
+  /* rank stripe */
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 8px 0 0 8px;
+    background: var(--stripe-color, transparent);
+    transition: opacity 0.3s;
+    opacity: 0.7;
+  }
+
+  .card.open::before { opacity: 1; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px 18px 24px;
+    user-select: none;
+  }
+
+  .rank-badge {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(123,97,255,0.1);
+    border: 1px solid rgba(123,97,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent2);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-meta { flex: 1; min-width: 0; }
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .name-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-build {
+    background: rgba(249,115,22,0.12);
+    color: var(--coral);
+    border: 1px solid rgba(249,115,22,0.2);
+  }
+
+  .card-desc-short {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* score */
+  .score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .score-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--score-color, var(--accent));
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score-bar-wrap {
+    width: 72px; height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-bar {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--score-color, var(--accent));
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* chevron */
+  .chevron {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), color 0.2s;
+  }
+
+  .card.open .chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+
+  /* card body - always visible */
+  .card-body {
+    display: block;
+  }
+
+  .card-inner {
+    padding: 0 24px 22px 24px;
+    border-top: 1px solid var(--border);
+    margin-left: 0;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 16px 0 8px;
+  }
+
+  .detail-text {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  /* scene tags */
+  .scene-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .scene-tag {
+    font-size: 12px;
+    padding: 4px 11px;
+    border-radius: 8px;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.15);
+    color: var(--accent);
+  }
+
+  /* install block */
+  .install-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .install-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .install-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .install-cmd {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    background: rgba(79,255,176,0.08);
+    padding: 2px 7px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+    border: 1px solid rgba(79,255,176,0.15);
+  }
+
+  /* download link */
+  .download-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .download-link:hover {
+    background: var(--text-bright);
+    transform: translateY(-1px);
+  }
+
+  /* footer */
+  footer {
+    text-align: center;
+    padding: 48px 24px 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* Responsive - Portrait / Mobile First */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+  }
+
+  /* Tablet Portrait */
+  @media (max-width: 899px) and (min-width: 600px) {
+    .hero { padding: 48px 32px 40px; }
+    .hero h1 { font-size: 26px; line-height: 1.3; }
+    .hero-sub { font-size: 14px; }
+    .hero-stats { gap: 24px; }
+    .stat-num { font-size: 20px; }
+    .content { padding: 32px 24px; }
+  }
+
+  /* Mobile Portrait */
+  @media (max-width: 599px) {
+    .hero {
+      padding: 32px 20px 24px;
+      min-height: auto;
+    }
+    .hero-badge {
+      font-size: 10px;
+      padding: 3px 10px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: 20px;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+    .hero h1 br { display: none; }
+    .hero-sub {
+      font-size: 13px;
+      max-width: 100%;
+      margin-bottom: 24px;
+    }
+    .hero-stats {
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-num { font-size: 18px; }
+    .stat-label { font-size: 11px; }
+
+    .content { padding: 24px 16px; }
+    .legend {
+      gap: 12px;
+      padding: 0 16px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .legend-item { font-size: 11px; }
+    .grid { padding: 0 12px; gap: 8px; }
+
+    .card-header {
+      padding: 14px 16px 14px 20px;
+      gap: 12px;
+    }
+    .rank-badge {
+      width: 30px;
+      height: 30px;
+      font-size: 12px;
+    }
+    .card-name { font-size: 14px; }
+    .card-desc-short { font-size: 11px; }
+    .score-num { font-size: 16px; }
+    .score-bar-wrap { width: 56px; }
+    .chevron { width: 16px; height: 16px; }
+
+    .card-inner { padding: 0 16px 16px 16px; }
+    .detail-text { font-size: 13px; }
+    .scene-tag { font-size: 11px; padding: 3px 8px; }
+    .install-block { padding: 10px 12px; }
+    .install-text { font-size: 11px; }
+
+    footer {
+      padding: 32px 16px 0;
+      font-size: 11px;
+    }
+  }
+
+  /* Ultra Small Portrait */
+  @media (max-width: 380px) {
+    .hero { padding: 24px 16px 20px; }
+    .hero h1 { font-size: 18px; }
+    .hero h1 span { display: block; }
+    .hero-stats { gap: 16px; }
+    .hero-sub br { display: none; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">Skills · 推荐</div>
+    <div class="title">10 个必备 Skills</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">概览</div>
+    <a class="nav-link active" href="#top"><span class="dot" style="background:#4fffb0"></span>推荐清单</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">分类</div>
+    <a class="nav-link" href="#installed"><span class="dot" style="background:#4fffb0"></span>直接安装</a>
+    <a class="nav-link" href="#custom"><span class="dot" style="background:#f97316"></span>需自建</a>
+    <a class="nav-link" href="#top-rated"><span class="dot" style="background:#f59e0b"></span>高分推荐</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+<div class="hero" id="top">
+  <div class="hero-badge">Claude Code · Skills 手册</div>
+  <h1><span>Skills大爆发！揭秘“大厂”</span><br><span>如何用一套体系，把AI从玩具</span><br><span>变成生产力</span></h1>
+  <p class="hero-sub">针对全栈开发者<br>按实际使用价值精选并评分<br>内部评选的十大企业级Skills</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">10</span><span class="stat-label">精选 Skills</span></div>
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">直接安装</span></div>
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">自建定制</span></div>
+    <div class="stat"><span class="stat-num">9.1</span><span class="stat-label">平均评分</span></div>
+  </div>
+</div>
+
+<div class="content">
+<div class="legend" id="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4fffb0"></div>直接安装使用</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>需用 skill-creator 自建</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>评分 9.5+</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>评分 9.0–9.4</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8892a4"></div>评分 8.0–8.9</div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+</div><!-- .content -->
+
+<footer>
+  本文档由 Claude Code 深度用户整理 · 按个人技术栈评分仅供参考<br>
+  技术栈：Go · Python · TypeScript · GitHub Actions · Anthropic API
+</footer>
+
+</div><!-- .main -->
+
+<script>
+const skills = [
+  {
+    rank: 1,
+    name: "skill-creator",
+    short: "造 Skill 的 Skill，整个工具库的倍增器",
+    score: 9.9,
+    build: false,
+    detail: "这是一个元技能——它本身不解决任何具体的开发问题，但它让你有能力快速造出解决具体问题的定制 skill。从需求访谈、SKILL.md 起草、测试用例编写、迭代优化到最终打包，全流程都有它辅助。10 个 slot 里有 1 个给它，可以撬动其余所有 skill 的质量上限建议第一个装。",
+    scenes: ["定制团队规范 skill", "构建私有工作流", "迭代优化现有 skill", "打包分享给团队"],
+    install: "直接在 Claude Code 中安装 skill-creator skill",
+    cmd: null
+  },
+  {
+    rank: 2,
+    name: "frontend-design",
+    short: "生产级 Web UI 生成，告别土味 AI 审美",
+    score: 9.8,
+    build: false,
+    detail: "这是 10 个 skill 里实际使用频率最高、单次提升最显著的一个。它强制 Claude Code 在写前端代码之前先确立完整的设计方向——视觉风格、字体选择、空间构成、交互细节——然后再动手生成代码。没有它，AI 生成的 UI 带着浓厚的「默认审美」；有了它，同样一句需求描述，输出的是可以直接进 production 的界面。",
+    scenes: ["React 组件开发", "Web 应用全栈", "Landing Page", "后台管理界面", "UI 原型快速验证"],
+    install: "直接在 Claude Code 中安装 frontend-design skill",
+    cmd: null
+  },
+  {
+    rank: 2,
+    name: "skill-creator",
+    short: "造 Skill 的 Skill，整个工具库的倍增器",
+    score: 9.9,
+    build: false,
+    detail: "这是一个元技能——它本身不解决任何具体的开发问题，但它让你有能力快速造出解决具体问题的定制 skill。从需求访谈、SKILL.md 起草、测试用例编写、迭代优化到最终打包，全流程都有它辅助。10 个 slot 里有 1 个给它，可以撬动其余所有 skill 的质量上限。建议第一个装。",
+    scenes: ["定制团队规范 skill", "构建私有工作流", "迭代优化现有 skill", "打包分享给团队"],
+    install: "直接在 Claude Code 中安装 skill-creator skill",
+    cmd: null
+  },
+  {
+    rank: 3,
+    name: "prompt-engineer",
+    short: "结构化 system prompt 框架，解决最常见的 LLM 调试痛点",
+    score: 9.5,
+    build: true,
+    detail: "用 skill-creator 自建的第一优先级 skill。它把你总结出来的 prompt 结构规范（角色定义 → 任务说明 → 输出格式 → 约束边界 → 少样本示例）固化成 Claude Code 的行为准则，让每次生成的 system prompt 都遵循同一套框架，而不是随机发挥。对做 LLM 集成项目的开发者来说，这个 skill 一旦建好，所有后续项目都受益。",
+    scenes: ["RAG 问答机器人 prompt 设计", "代码生成助手 system prompt", "结构化数据抽取 prompt", "多轮对话系统设计", "Anthropic API 集成项目"],
+    install: "用 skill-creator 自建，告知场景：Python/TypeScript + Anthropic API",
+    cmd: "python -m scripts.package_skill ~/.claude/skills/prompt-engineer/"
+  },
+  {
+    rank: 4,
+    name: "product-self-knowledge",
+    short: "让 Claude Code 永远用最新 Anthropic 文档说话",
+    score: 9.4,
+    build: false,
+    detail: "Claude 的训练数据有截止日期，但 Anthropic 自己的 API 一直在更新——模型参数名、SDK 写法、定价结构、速率限制……这些细节经常变化。这个 skill 让 Claude Code 在回答任何 Anthropic 产品相关问题之前，先查最新官方文档再回答，而不是凭训练时的记忆乱说。做 AI 应用开发的人，这是护城河级别的 skill。",
+    scenes: ["Anthropic API 调用代码生成", "claude SDK 版本相关问题", "模型参数查询", "定价与 token 计算", "新功能接入"],
+    install: "直接在 Claude Code 中安装 product-self-knowledge skill",
+    cmd: null
+  },
+  {
+    rank: 5,
+    name: "code-review-advisor",
+    short: "按团队规范输出带等级标注的标准化 Code Review 报告",
+    score: 9.0,
+    build: true,
+    detail: "用 skill-creator 自建的多语言 Code Review 专项 skill。核心价值是把你团队约定的规范（Go 的 error handling 方式、goroutine 泄漏检测、TypeScript 的类型安全要求等）嵌入进去，让每次输出都是 Critical / Major / Minor 三级标注 + 具体改进建议 + 代码示例的格式。不再是泛泛的「代码可以优化」，而是指向具体行的、有对照修复方案的评审意见。",
+    scenes: ["Go 后端服务 Code Review", "TypeScript 前端组件审查", "Python 脚本安全审计", "PR 合并前质量把关", "新成员代码规范培训"],
+    install: "用 skill-creator 自建，提供 Go/TS/Python 团队规范细节",
+    cmd: "python -m scripts.package_skill ~/.claude/skills/code-review-advisor/"
+  },
+  {
+    rank: 6,
+    name: "file-reading",
+    short: "文件处理路由表，彻底消灭「读不了」玄学",
+    score: 9.2,
+    build: false,
+    detail: "一个朴素但极其重要的 skill。它是一个路由表，告诉 Claude Code 碰到不同格式的文件该用哪种读取策略：PDF 走文字提取、扫描件走 OCR、DOCX 走结构解析、图片走视觉识别……没有它，Claude Code 面对二进制文件经常走弯路甚至直接说「无法读取」。装了之后，文件处理从玄学变成确定性行为。",
+    scenes: ["上传 PDF API 文档分析", "读取 Word 格式需求说明", "处理图片中的架构图", "解析 JSON/CSV 数据文件", "读取上传的代码文件"],
+    install: "直接在 Claude Code 中安装 file-reading skill",
+    cmd: null
+  },
+  {
+    rank: 7,
+    name: "ci-github-actions",
+    short: "多语言仓库的专属 CI workflow 生成器",
+    score: 8.6,
+    build: true,
+    detail: "用 skill-creator 自建的 DevOps 专项 skill，核心是把你的仓库结构（Go 后端 + TypeScript 前端 + Python 脚本的 monorepo）、部署方式（Docker + GHCR）、缓存策略、Secret 命名规范全都固化进去。建议用子目录结构：go-workflow.md / ts-workflow.md / python-workflow.md 三个模板独立存放，Claude Code 根据需求按需加载，不会把三种 YAML 逻辑混在一起。",
+    scenes: ["多语言 monorepo CI 配置", "Go API 服务 Docker 构建推送", "TypeScript 前端 PR 预览部署", "Python 脚本自动化测试", "paths filter 按需触发 job"],
+    install: "用 skill-creator 自建，提供仓库结构 + 部署目标 + Secret 命名",
+    cmd: "python -m scripts.package_skill ~/.claude/skills/ci-github-actions/"
+  },
+  {
+    rank: 8,
+    name: "docx",
+    short: "正式技术文档的 Word 交付格式，含完整目录和标题层级",
+    score: 8.5,
+    build: false,
+    detail: "做开发的人容易低估 Word 文档的需求频率——但只要你在团队里，接口文档、技术规范、系统设计说明总有人要 Word 格式的正式版本。这个 skill 让 Claude Code 输出带完整格式的 .docx：目录自动生成、标题层级规范、表格整齐、页码正确。你只管内容，格式的事全部交给它。",
+    scenes: ["API 接口文档正式版", "技术规范书交付", "系统设计说明文件", "项目验收文档", "团队内部技术手册"],
+    install: "直接在 Claude Code 中安装 docx skill",
+    cmd: null
+  },
+  {
+    rank: 9,
+    name: "pdf + pdf-reading",
+    short: "完整 PDF 工作流：读取解析 + 生成输出的组合包",
+    score: 8.4,
+    build: false,
+    detail: "这两个 skill 是配对使用的——pdf-reading 负责深度解析各类 PDF（包括扫描件 OCR），pdf 负责生成、合并、拆分、加水印等所有写操作。做技术开发经常要分析第三方 PDF（RFC 文档、论文、API Spec），有了 pdf-reading 可以直接提取结构化信息；有了 pdf 可以输出专业的技术报告。两个 slot，覆盖所有 PDF 场景，缺一不可。",
+    scenes: ["RFC / 技术论文内容提取", "API Spec 分析整理", "扫描版合同解析（OCR）", "技术报告 PDF 生成", "多份文档合并输出"],
+    install: "直接在 Claude Code 中分别安装 pdf 和 pdf-reading skill",
+    cmd: null
+  },
+  {
+    rank: 10,
+    name: "pptx",
+    short: "架构评审和技术汇报 PPT，不再手动排版",
+    score: 8.2,
+    build: false,
+    detail: "做系统设计和架构评审，最终产出几乎都要落成 PPT。没有这个 skill 时 Claude Code 生成的演示文稿结构散乱；装了之后可以直接描述「架构思路 + 方案对比 + 风险点」，输出结构清晰、可以直接拿去讲的多 slide 文稿，包含 speaker notes 和图表嵌入位置提示。每次架构评审至少省一个小时排版时间。",
+    scenes: ["系统架构评审 PPT", "技术方案汇报", "新功能设计评审", "团队技术分享", "项目复盘演示"],
+    install: "直接在 Claude Code 中安装 pptx skill",
+    cmd: null
+  }
+];
+
+// Score color helper
+function scoreColor(s) {
+  if (s >= 9.5) return '#ffc94a';
+  if (s >= 9.0) return '#4fffb0';
+  return '#8892a4';
+}
+function stripeColor(s) {
+  if (s >= 9.5) return '#ffc94a';
+  if (s >= 9.0) return '#4fffb0';
+  return '#7b61ff';
+}
+
+const grid = document.getElementById('grid');
+
+[...skills].reverse().forEach((sk, i) => {
+  const sc = scoreColor(sk.score);
+  const stripe = stripeColor(sk.score);
+  const pct = ((sk.score - 7) / 3 * 100).toFixed(1);
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--stripe-color', stripe);
+
+  // badge colors
+  let badgeBg, badgeBorder, badgeColor;
+  if (sk.score >= 9.5) {
+    badgeBg = 'rgba(255,201,74,0.12)'; badgeBorder = 'rgba(255,201,74,0.3)'; badgeColor = '#ffc94a';
+  } else if (sk.score >= 9.0) {
+    badgeBg = 'rgba(79,255,176,0.1)'; badgeBorder = 'rgba(79,255,176,0.25)'; badgeColor = '#4fffb0';
+  } else {
+    badgeBg = 'rgba(123,97,255,0.1)'; badgeBorder = 'rgba(123,97,255,0.22)'; badgeColor = '#7b61ff';
+  }
+
+  const buildTag = sk.build
+    ? `<span class="name-tag tag-build">自建</span>` : '';
+
+  const sceneTagsHtml = sk.scenes.map(s =>
+    `<span class="scene-tag">${s}</span>`
+  ).join('');
+
+  const installHtml = sk.build
+    ? `<div class="install-block">
+        <div class="install-icon">🔧</div>
+        <div class="install-text">
+          <strong style="color:var(--text-bright)">自建方式：</strong>${sk.install}<br>
+          <span class="install-cmd">${sk.cmd}</span>
+        </div>
+      </div>`
+    : `<div class="install-block">
+        <div class="install-icon">⚡</div>
+        <div class="install-text"><strong style="color:var(--text-bright)">安装方式：</strong>${sk.install}</div>
+        <a class="download-link" href="#" data-skill="${sk.name}">安装</a>
+      </div>`;
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="rank-badge" style="--badge-bg:${badgeBg};--badge-border:${badgeBorder};--badge-color:${badgeColor}">
+        ${String(sk.rank).padStart(2,'0')}
+      </div>
+      <div class="card-meta">
+        <div class="card-name">
+          <code style="font-family:var(--mono);font-size:14px">${sk.name}</code>
+          ${buildTag}
+        </div>
+        <div class="card-desc-short">${sk.short}</div>
+      </div>
+      <div class="score-block" style="--score-color:${sc}">
+        <div class="score-num">${sk.score}</div>
+        <div class="score-bar-wrap">
+          <div class="score-bar" style="width:${pct}%"></div>
+        </div>
+      </div>
+          </div>
+    <div class="card-body">
+      <div class="card-inner">
+        <div class="section-label">详细说明</div>
+        <div class="detail-text">${sk.detail}</div>
+        <div class="section-label">适用场景</div>
+        <div class="scene-tags">${sceneTagsHtml}</div>
+        <div class="section-label">安装 / 创建</div>
+        ${installHtml}
+      </div>
+    </div>
+  `;
+
+  grid.appendChild(card);
+});
+
+// Download link click handler - shows skill install command
+document.querySelectorAll('.download-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const skillName = link.dataset.skill;
+    // Copy skill install command to clipboard
+    navigator.clipboard.writeText(`claude skill install ${skillName}`);
+    link.textContent = '已复制!';
+    setTimeout(() => { link.textContent = '安装'; }, 1500);
+  });
+});
+</script>
+</body>
+</html>
